@@ -1,0 +1,737 @@
+---
+title: "Data Wrangling, Tweets & Energy Market"
+author: "Priya Parkash"
+date: "6/25/2022"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+require(rtweet)
+require(httr)
+require(jsonlite)
+require(dplyr)
+library(academictwitteR)
+library(readr)
+library(tidytext)
+library(textdata)
+library(hms)
+library(lubridate) 
+library(tidytext)
+library(tm)
+library(igraph)
+library(glue)
+library(networkD3)
+library(rtweet)
+library(plyr)
+library(stringr)
+library(ggplot2)
+library(ggeasy)
+library(plotly)
+library(dplyr)  
+library(hms)
+library(lubridate) 
+library(magrittr)
+library(tidyverse)
+library(janeaustenr)
+library(widyr)
+library(SnowballC)
+library(tm)
+library(twitteR)
+library(syuzhet)
+library(readr)
+```
+
+# Tweet Pulling 
+```{r}
+set_bearer()
+
+tweets_2021_jan <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-01-01T00:00:00Z",
+    end_tweets = "2021-01-31T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_jan <- data.frame(tweets_2021_jan$text, tweets_2021_jan$created_at)
+
+write_csv(tweet2021_jan, "tweets_jan.csv")
+```
+
+```{r}
+tweets_2021_feb <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-02-01T00:00:00Z",
+    end_tweets = "2021-02-28T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_feb <- data.frame(tweets_2021_feb$text, tweets_2021_feb$created_at)
+
+write_csv(tweet2021_feb, "tweets_feb.csv")
+```
+
+```{r}
+tweets_2021_mar <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-03-01T00:00:00Z",
+    end_tweets = "2021-03-31T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_mar <- data.frame(tweets_2021_mar$text, tweets_2021_mar$created_at)
+
+write_csv(tweet2021_mar, "tweets_mar.csv")
+```
+
+```{r}
+tweets_2021_apr <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-04-01T00:00:00Z",
+    end_tweets = "2021-04-30T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_apr <- data.frame(tweets_2021_apr$text, tweets_2021_apr$created_at)
+
+write_csv(tweet2021_apr, "tweets_apr.csv")
+```
+
+```{r}
+tweets_2021_may <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-05-01T00:00:00Z",
+    end_tweets = "2021-05-31T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_may <- data.frame(tweets_2021_may$text, tweets_2021_may$created_at)
+
+write_csv(tweet2021_may, "tweets_may.csv")
+```
+
+```{r}
+tweets_2021_june <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-06-01T00:00:00Z",
+    end_tweets = "2021-06-30T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_june <- data.frame(tweets_2021_june$text, tweets_2021_june$created_at)
+
+write_csv(tweet2021_june, "tweets_june.csv")
+```
+
+```{r}
+tweets_2021_july <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-07-01T00:00:00Z",
+    end_tweets = "2021-07-31T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_july <- data.frame(tweets_2021_july$text, tweets_2021_july$created_at)
+
+write_csv(tweet2021_july, "tweets_july.csv")
+```
+
+```{r}
+tweets_2021_aug <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-08-01T00:00:00Z",
+    end_tweets = "2021-08-31T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_aug <- data.frame(tweets_2021_aug$text, tweets_2021_aug$created_at)
+
+write_csv(tweet2021_aug, "tweets_aug.csv")
+```
+
+```{r}
+tweets_2021_sept <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-09-01T00:00:00Z",
+    end_tweets = "2021-09-30T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_sept <- data.frame(tweets_2021_sept$text, tweets_2021_sept$created_at)
+
+write_csv(tweet2021_sept, "tweets_sept.csv")
+```
+
+```{r}
+tweets_2021_oct <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-10-01T00:00:00Z",
+    end_tweets = "2021-10-31T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_oct <- data.frame(tweets_2021_oct$text, tweets_2021_oct$created_at)
+
+write_csv(tweet2021_oct, "tweets_oct.csv")
+```
+
+```{r}
+tweets_2021_nov <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-11-01T00:00:00Z",
+    end_tweets = "2021-11-30T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_nov <- data.frame(tweets_2021_nov$text, tweets_2021_nov$created_at)
+
+write_csv(tweet2021_nov, "tweets_nov.csv")
+```
+
+
+```{r}
+tweets_2021_dec <-
+  get_all_tweets(
+    query = c("carbon trading", "backloading", "carbon market", "carbon price", "CO2","drought", "emission", "EU ETS", "flood", "fossil fuel", "geothermal", "GHG", "global warming", "greenhouse gas", "climate", "climate change", "global warming",  "carbon emissions", "emissions trading", "rising temperatures"),
+    start_tweets = "2021-12-01T00:00:00Z",
+    end_tweets = "2021-12-31T00:00:00Z",
+    file = "blmtweets",
+    data_path = "dataTest1/",
+    lang = "en", is_verified = TRUE,
+    n = Inf)
+
+
+
+tweet2021_dec <- data.frame(tweets_2021_dec$text, tweets_2021_dec$created_at)
+
+write_csv(tweet2021_dec, "tweets_dec.csv")
+```
+
+# Clean Data
+```{r}
+tweets_jan <- read.csv("tweets_jan.csv")
+tweets_feb <- read.csv("tweets_feb.csv")
+tweets_mar <- read.csv("tweets_mar.csv")
+tweets_apr <- read.csv("tweets_apr.csv")
+tweets_may <- read.csv("tweets_may.csv")
+tweets_june <- read.csv("tweets_june.csv")
+tweets_july <- read.csv("tweets_july.csv")
+tweets_aug <- read.csv("tweets_aug.csv")
+tweets_sept <- read.csv("tweets_sept.csv")
+tweets_oct <- read.csv("tweets_oct.csv")
+tweets_nov <- read.csv("tweets_nov.csv")
+tweets_dec <- read.csv("tweets_dec.csv")
+```
+
+```{r}
+colnames(tweets_jan) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_feb) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_mar) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_apr) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_may) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_june) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_july) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_aug) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_sept) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_oct) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_nov) <- c("tweets_2021.text", "tweets_2021.created")
+colnames(tweets_dec) <- c("tweets_2021.text", "tweets_2021.created")
+
+
+tweets_all <- rbind(tweets_jan, tweets_feb, tweets_mar, tweets_apr, tweets_may, tweets_june, tweets_july, tweets_aug, tweets_sept, tweets_oct, tweets_nov, tweets_dec)
+```
+
+```{r}
+tweets_all%<>% 
+  mutate(
+    created = tweets_2021.created %>% 
+      # Remove zeros.
+      str_remove_all(pattern = '\\+0000') %>%
+      # Parse date.
+      parse_date_time(orders = '%y-%m-%d %H%M%S')
+  )
+
+tweets_all  %<>% 
+  mutate(Created_At_Round = created%>% round(units = 'hours') %>% as.POSIXct())
+
+tweets_all %>% pull(created) %>% min()
+
+tweets_all %>% pull(created) %>% max()
+
+plt <- tweets_all %>% 
+  dplyr::count(Created_At_Round) %>% 
+  ggplot(mapping = aes(x = Created_At_Round, y = n)) +
+  theme_light() +
+  geom_line() +
+  xlab(label = 'Date') +
+  ylab(label = NULL) +
+  ggtitle(label = 'Number of Tweets per Hour')
+
+tweets_all <- tweets_all[grep("^RT ", tweets_all$tweets_2021.text, invert=TRUE),]
+
+plt %>% ggplotly()
+```
+
+#Sentiment Score
+```{r}
+tweets.df1 <- gsub("http.*","",tweets_all$tweets_2021.text)
+tweets.df1 <- gsub("https.*","",tweets.df1)
+tweets.df1 <- gsub("#.*","",tweets.df1)
+tweets.df1 <- gsub("@.*","",tweets.df1)
+
+tweets.df2 <-as.data.frame(tweets.df1)
+sample<- sample_n(tweets.df2, 100000)
+
+word.df <- as.vector(tweets.df1)
+word.df <- as.data.frame(tweets.df1)
+word.df <- word.df[grep("^RT ", word.df$tweets.df1, invert=TRUE),]
+
+sent.value_s <- get_sentiment(no.rts)
+sent.value <- get_sentiment(word.df)
+
+sentences <- c("I hate you", "The world is ending", "You are getting fat and ugly", "I am so proud of you, you are so brave")
+get_sentiment(sentences)
+
+library(treemap)
+plot(nrc_sent)
+simple_plot(sent.value_s)
+nrc_sent <- get_nrc_sentiment(word.df)
+
+
+
+most.positive <- word.df[sent.value == max(sent.value)]
+
+most.positive
+
+most.negative <- word.df[sent.value <= min(sent.value)] 
+most.negative 
+
+
+sent.val <-  as.data.frame(sent.value)
+sent.val <- cbind(sent.val, tweets_all$tweets_2021.created)
+
+
+
+sent.val %<>% 
+  mutate(
+    created = `tweets_all$tweets_2021.created` %>% 
+      # Remove zeros.
+      str_remove_all(pattern = '\\+0000') %>%
+      # Parse date.
+      parse_date_time(orders = '%y-%m-%d %H%M%S')
+  )
+
+sent.val  %<>% 
+  mutate(Created_At_Round = created%>% round(units = 'hours') %>% as.POSIXct())
+
+
+plt1 <- sent.val %>%  dplyr::group_by(Created_At_Round) %>% summarise(average_sent = sum(sent.value))
+
+plt2 <- sent.val %>% dplyr::count(Created_At_Round)
+
+final_sent <- plt1$average_sent/plt2$n
+fin <- cbind(plt2$Created_At_Round, as.data.frame(final_sent))
+
+simple_plot(final_sent)
+
+write_csv(fin, "final_sent.csv")
+
+write_csv(tweets_all1, "tweets_all.csv")
+```
+
+#Other Data
+```{r}
+permits <- read.csv("~/CarbonCredits/ckz22_intraday-60min.csv")
+permits <- subset(permits, select = c(1,3))
+colnames(permits) <- c("Time","CKZ21_High")
+
+
+nbp <- read.csv("~/CarbonCredits/jntz22_daily_historical.csv")
+nbp <- subset(nbp, select = c(1,3))
+colnames(nbp) <- c("nbp_Time","nbp_High")
+
+ftse <- read.csv("~/CarbonCredits/HistoricalPrices.csv")
+ftse <- subset(ftse, select = c(1,3))
+colnames(ftse) <- c("ftse_Time","ftse_High")
+
+xle <- read.csv("~/CarbonCredits/xle_daily.csv")
+xle <- subset(xle, select = c(1,3))
+colnames(xle) <- c("xle_Time","xle_High")
+
+brent <- read.csv("~/CarbonCredits/cbz22_intraday.csv")
+brent <- subset(brent, select = c(2,4))
+colnames(brent) <- c("brent_Time","brent_High")
+
+
+coal <- read.csv("~/CarbonCredits/itfz22_daily.csv")
+coal <- subset(coal, select = c(1,3))
+colnames(coal) <- c("coal_Time","coal_High")
+
+
+ftse <- ftse[rep(seq_len(nrow(ftse)), each = 10),]
+nbp <- nbp[rep(seq_len(nrow(nbp)), each = 10),]
+coal <- coal[rep(seq_len(nrow(coal)), each = 10),]
+xle <- xle[rep(seq_len(nrow(xle)), each = 10),]
+
+xle=xle[order(nrow(xle):1),]
+ftse=ftse[order(nrow(ftse):1),]
+coal=coal[order(nrow(coal):1),]
+brent=brent[order(nrow(brent):1),]
+nbp=nbp[order(nrow(nbp):1),]
+permits=permits[order(nrow(permits):1),]
+```
+
+
+# Energy & Sentiment Data Cleaning
+```{r}
+dec <- c(31, 26, 25,24, 19, 18, 12, 11, 5, 4)
+nov <- c(30, 28, 27, 25, 21, 20, 14, 13, 7, 6)
+oct <- c(31, 30, 24, 23, 17, 16, 10, 9, 6, 3, 2)
+sept <- c(30, 26, 25, 19, 18, 12, 11,9, 6, 5, 4)
+aug <- c(31, 30, 29, 28, 22, 21, 15, 14,13,12, 8, 7, 4, 3,1)
+jul<- c(31, 30, 26,25, 24, 18, 17, 11, 10, 5, 4, 3)
+jun <- c(30, 27, 26, 20, 19, 18, 13, 12,11, 7, 6, 5, 4)
+may <- c(31, 30, 29, 23, 22, 16, 15, 9, 8, 3, 2, 1)
+apr <- c(30, 27, 25, 24, 19, 18, 17, 12, 11, 10, 5, 4, 3, 2, 1)
+mar <- c(31, 28, 27, 22, 21, 20, 14, 13, 7, 6)
+feb <- c(28, 27, 21, 20,15,  14, 13, 7, 6)
+jan <- c(31, 30, 24, 23,18, 17, 16,12, 10, 9, 3, 2, 1)
+
+
+ftse1 <- ftse %>% 
+  mutate(month = as.numeric(substr(ftse_Time,1,2)) ) %>% 
+  mutate(day = as.numeric(substr(ftse_Time,4,5)) ) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% 
+  filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan)) 
+
+
+coal1 <- coal[-c(1:10),]
+
+coal1 <- coal1 %>% 
+  mutate(month = as.numeric(substr(coal_Time,1,2)) ) %>% 
+  mutate(day = as.numeric(substr(coal_Time,4,5)) ) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% 
+  filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan)) 
+
+
+
+nbp1<- nbp[-c(1:10),]
+
+nbp1 <- nbp1 %>% 
+  mutate(month = as.numeric(substr(nbp_Time,1,2)) ) %>% 
+  mutate(day = as.numeric(substr(nbp_Time,4,5)) ) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% 
+  filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan)) 
+
+
+xle1<- xle[-c(1:10),]
+
+xle1 <- xle1 %>% 
+  mutate(month = as.numeric(substr(xle_Time,1,2)) ) %>% 
+  mutate(day = as.numeric(substr(xle_Time,4,5)) ) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% 
+  filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+
+brent1<- brent[-c(1),]
+
+brent1 <- brent1 %>% 
+  mutate(month = as.numeric(substr(brent_Time,1,2)) ) %>% 
+  mutate(day = as.numeric(substr(brent_Time,4,5)) ) %>% 
+  mutate(time = as.numeric(substr(brent_Time,12,13)))%>%
+  filter(time >= 1) %>% 
+  filter(time <= 10) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% 
+  filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+
+permits1<- permits[-c(1),]
+
+permits1 <- permits1 %>% 
+  mutate(month = as.numeric(substr(Time,1,2)) ) %>% 
+  mutate(day = as.numeric(substr(Time,4,5)) ) %>%  mutate(dm = as.character(substr(Time,1, 5)) ) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% 
+  filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+sent0 <- fin %>% 
+  mutate(time = as.numeric(substr(plt2$Created_At_Round,12,13))) %>% 
+  mutate(month = as.numeric(substr(plt2$Created_At_Round,6,7)) ) %>% 
+  mutate(day = as.numeric(substr(plt2$Created_At_Round,9,10)) ) %>% 
+  filter(time >= 1) %>% 
+  filter(time <= 10) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% 
+  filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+
+
+
+sent2 <- fin %>% 
+  mutate(time = as.numeric(substr(plt2$Created_At_Round,12,13))) %>% 
+  mutate(month = as.numeric(substr(plt2$Created_At_Round,6,7)) ) %>% 
+  mutate(day = as.numeric(substr(plt2$Created_At_Round,9,10)) ) %>% 
+  filter(time == 23 | time == 0 | time == 1 | time == 2 |time == 3 |time == 4 |time == 5 |time == 6 |time == 7 |time == 8) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+
+sent1 <- fin %>% 
+  mutate(time = as.numeric(substr(plt2$Created_At_Round,12,13))) %>% 
+  mutate(month = as.numeric(substr(plt2$Created_At_Round,6,7)) ) %>% 
+  mutate(day = as.numeric(substr(plt2$Created_At_Round,9,10)) ) %>% 
+  filter(time == 0 | time == 1 | time == 2 |time == 3 |time == 4 |time == 5 |time == 6 |time == 7 |time == 8 |time == 9) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+sent3 <- fin %>% 
+  mutate(time = as.numeric(substr(plt2$Created_At_Round,12,13))) %>% 
+  mutate(month = as.numeric(substr(plt2$Created_At_Round,6,7)) ) %>% 
+  mutate(day = as.numeric(substr(plt2$Created_At_Round,9,10)) ) %>% 
+  filter(time == 22 |time == 23 |time == 0 | time == 1 | time == 2 |time == 3 |time == 4 |time == 5 |time == 6 |time == 7) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan)) 
+
+sent4 <- fin %>% 
+  mutate(time = as.numeric(substr(plt2$Created_At_Round,12,13))) %>% 
+  mutate(month = as.numeric(substr(plt2$Created_At_Round,6,7)) ) %>% 
+  mutate(day = as.numeric(substr(plt2$Created_At_Round,9,10)) ) %>% 
+  filter(time == 21 |time == 22 |time == 23 |time == 0 | time == 1 | time == 2 |time == 3 |time == 4 |time == 5 |time == 6 ) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+
+sent5 <- fin %>% 
+  mutate(time = as.numeric(substr(plt2$Created_At_Round,12,13))) %>% 
+  mutate(month = as.numeric(substr(plt2$Created_At_Round,6,7)) ) %>% 
+  mutate(day = as.numeric(substr(plt2$Created_At_Round,9,10)) ) %>% 
+  filter(time == 20 | time == 21 |time == 22 |time == 23 |time == 0 | time == 1 | time == 2 |time == 3 |time == 4 |time == 5 ) %>% 
+  filter(!(month == 12 & day %in% dec)) %>% 
+  filter(!(month == 11 & day %in% nov)) %>% filter(!(month == 10 & day %in% oct)) %>% 
+  filter(!(month == 9 & day %in% sept)) %>% 
+  filter(!(month == 8 & day %in% aug)) %>% 
+  filter(!(month == 7 & day %in% jul)) %>% 
+  filter(!(month == 6 & day %in% jun)) %>% 
+  filter(!(month == 5 & day %in% may)) %>% 
+  filter(!(month == 4 & day %in% apr)) %>% 
+  filter(!(month == 3 & day %in% mar)) %>% 
+  filter(!(month == 2 & day %in% feb)) %>% 
+  filter(!(month == 1 & day %in% jan))
+
+
+
+dataset <- cbind(permits1$Time, permits1$CKZ21_High, brent1$brent_High, coal1$coal_High, xle1$xle_High, ftse1$ftse_High, nbp1$nbp_High)
+
+dataset<- dataset[-c(1:10),]
+
+
+sent0 <- sent0[-c(1:10),]
+sent1 <- sent1[-c(1:10),]
+sent2 <- sent2[-c(1:9, 2240),]
+sent3 <- sent3[-c(1:8, 2239, 2240),]
+sent4 <- sent4[-c(1:7, 2238, 2239, 2240),]
+sent5 <- sent5[-c(1:6, 2237, 2238, 2239, 2240),]
+
+a <- sent0$final_sent
+b <- sent1$final_sent
+c <- sent2$final_sent
+d <- sent3$final_sent
+e <- sent4$final_sent
+f <- sent5$final_sent
+
+dataset <- cbind(dataset,a, b, c, d, e, f)
+
+dataset <- as.data.frame(dataset)
+
+colnames(dataset) <- c("Time", "permits", "brent", "coal", "xle", "ftse", "nbp", "sent0", "sent1","sent2","sent3","sent4", "sent5" )
+
+df <- as.data.frame(dataset$brent)
+df.new = df[seq(1, nrow(df), 10), ]
+
+df1 <- as.data.frame(dataset$ftse)
+df.new1 = df1[seq(1, nrow(df), 10), ]
+
+df2 <- as.data.frame(dataset$xle)
+df.new2 = df2[seq(1, nrow(df), 10), ]
+
+df3 <- as.data.frame(dataset$coal)
+df.new3 = df3[seq(1, nrow(df), 10), ]
+
+df4 <- as.data.frame(dataset$nbp)
+df.new4 = df4[seq(1, nrow(df), 10), ]
+
+df5 <- as.data.frame(dataset$sent0)
+df.new5 = df5[seq(1, nrow(df), 1), ]
+
+plot(df.new, las=1)
+plot(df.new1, las=1)
+plot(df.new2, las=1)
+plot(df.new3, las=1)
+plot(df.new4, las=1)
+plot(df.new5, las=1)
+
+plot(df.new)
+```
