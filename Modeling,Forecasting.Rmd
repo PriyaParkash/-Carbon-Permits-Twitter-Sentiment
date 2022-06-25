@@ -1,0 +1,275 @@
+---
+title: "Modeling"
+author: "Priya Parkash"
+date: "6/25/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(fpp2)
+library(urca)
+library(forecast)
+library(ggplot2)
+require(rtweet)
+require(httr)
+require(jsonlite)
+require(dplyr)
+library(academictwitteR)
+library(readr)
+library(tidytext)
+library(textdata)
+library(hms)
+library(lubridate) 
+library(tidytext)
+library(tm)
+library(igraph)
+library(glue)
+library(networkD3)
+library(rtweet)
+library(plyr)
+library(stringr)
+library(ggplot2)
+library(ggeasy)
+library(plotly)
+library(dplyr)  
+library(hms)
+library(lubridate) 
+library(magrittr)
+library(tidyverse)
+library(janeaustenr)
+library(widyr)
+library(SnowballC)
+library(tm)
+library(twitteR)
+library(syuzhet)
+library(readr)
+```
+
+
+```{r}
+
+dataset <- as.data.frame(dataset)
+plot(dataset$permits, type = "l", main = "Price of EU Carbon Permit Futures", xlab = "Date/Time", ylab = "Price")
+
+plot(dataset$sent0, type = "l", main = "Price of EU Carbon Permit Futures", xlab = "Date/Time", ylab = "Price")
+
+dataset$permits <- as.numeric(dataset$permits)
+dataset$coal <- as.numeric(dataset$coal)
+dataset$brent <- as.numeric(dataset$brent)
+dataset$xle <- as.numeric(dataset$xle)
+dataset$ftse <- as.numeric(dataset$ftse)
+dataset$nbp <- as.numeric(dataset$nbp)
+dataset$sent0 <- as.numeric(dataset$sent0)
+dataset$sent1 <- as.numeric(dataset$sent1)
+dataset$sent2 <- as.numeric(dataset$sent2)
+dataset$sent3 <- as.numeric(dataset$sent3)
+dataset$sent4 <- as.numeric(dataset$sent4)
+dataset$sent5 <- as.numeric(dataset$sent5)
+
+
+
+ggtsdisplay(diff(dataset$permits))
+```
+
+
+```{r}
+dataset <- ts(dataset)
+
+fit_0 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,8)], allowdrift = TRUE, allowmean = TRUE)
+fit_0
+
+checkresiduals(fit_0)
+
+
+fit_1 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,9)], allowdrift = TRUE, allowmean = TRUE)
+fit_1
+
+checkresiduals(fit_1)
+
+fit_2 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,10)], allowdrift = TRUE, allowmean = TRUE)
+fit_2
+
+checkresiduals(fit_2)
+
+fit_3 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,11)], allowdrift = TRUE, allowmean = TRUE)
+fit_3
+checkresiduals(fit_3)   #lowest AICc
+
+fit_4 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,12)], allowdrift = TRUE, allowmean = TRUE)
+fit_4
+checkresiduals(fit_4)
+
+fit_5 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,13)], allowdrift = TRUE, allowmean = TRUE)
+fit_5
+checkresiduals(fit_5)
+
+fit_6 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,8,9)],  allowdrift = TRUE, allowmean = TRUE)
+fit_6
+checkresiduals(fit_6) #AICc
+
+
+fit_8 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,8,9, 10)],  allowdrift = TRUE, allowmean = TRUE)
+fit_8
+
+fit_7 <- auto.arima(dataset[,"permits"], xreg = dataset[, c(3,4, 5, 6, 7,8, 9,10)], allowdrift = TRUE, allowmean = TRUE)
+fit_7
+checkresiduals(fit_7)
+
+library(lmtest)
+ab <- coeftest(fit_6)
+ab <- as.data.frame(tidy(ab))
+ab <- subset(ab, select = -c(1))
+
+library(kableExtra)
+rownames(ab) <- c("MA(1)", "Drift", "Crude Oil Brent Dec 22", "Coal (API2) CIF ARA Futures Dec 22", "XLE - Energy Select Sector SPDR Fund", "FTSE 100 Index", "UK NBP Natural Gas Futures Dec 22 ", "Sentiment at t Hours", "Sentiment at t-1 Hours")
+
+
+library(gtools)
+ab$p <- stars.pval(ab$p.value)
+ab %>%  kable(caption = "Results - Model 6, EUA Futures and Hourly Twitter Sentiment", col.names = c( "Coefficient", "Standard Error", "Z - Statistic", "P - Value", ""),
+    digits = c(3, 3, 3, 5, 0))%>% kable_classic() %>% kable_styling(latex_options = "HOLD_position")
+
+#noise seems to be sub-gaussian
+
+```
+
+# Set up data for forecasting
+```{r}
+holt_model_brent <- holt(dataset$brent, h = 70)
+brentf <- as.data.frame(summary(holt_model_brent))
+
+
+holt_model_xle <- holt(dataset$xle, h = 70)
+xlef <- as.data.frame(summary(holt_model_xle))
+
+
+holt_model_ftse <- holt(dataset$ftse, h = 70)
+ftsef <- as.data.frame(summary(holt_model_ftse))
+
+
+holt_model_coal <- holt(dataset$coal, h = 70)
+coalf <- as.data.frame(summary(holt_model_coal))
+
+
+holt_model_nbp <- holt(dataset$nbp, h = 70)
+nbpf <- as.data.frame(summary(holt_model_nbp))
+
+
+holt_model_sent0 <- holt(dataset$sent0, h = 70)
+sent0f <- as.data.frame(summary(holt_model_sent0))
+
+holt_model_sent1 <- holt(dataset$sent1, h = 70)
+sent1f <- as.data.frame(summary(holt_model_sent1))
+
+x_future <- cbind(brentf$`Point Forecast`,coalf$`Point Forecast`,xlef$`Point Forecast`, ftsef$`Point Forecast`, nbpf$`Point Forecast`, sent0f$`Point Forecast` ,sent1f$`Point Forecast`)
+
+colnames(x_future) <- c( "brent", "coal", "xle", "ftse", "nbp", "sent0", "sent1")
+
+sent0_neg <- cumprod(c(-0.011, rep(1.07,69)))
+sent1_neg <- cumprod(c(-0.01, rep(1.07,69)))
+
+x_future2 <- cbind(brentf$`Point Forecast`,coalf$`Point Forecast`,xlef$`Point Forecast`, ftsef$`Point Forecast`, nbpf$`Point Forecast`, sent0_neg, sent1_neg)
+
+colnames(x_future2) <- c( "brent", "coal", "xle", "ftse", "nbp", "sent0", "sent1")
+
+sent0_pos <- cumprod(c(0.011, rep(1.07,69)))
+sent1_pos <- cumprod(c(0.01, rep(1.07,69)))
+
+x_future3 <- cbind(brentf$`Point Forecast`,coalf$`Point Forecast`,xlef$`Point Forecast`, ftsef$`Point Forecast`, nbpf$`Point Forecast`, sent0_pos, sent1_pos)
+
+colnames(x_future3) <- c( "brent", "coal", "xle", "ftse", "nbp", "sent0", "sent1")
+
+
+brent_war <- cumprod(c(80, rep(1.01,69)))
+nbp_war <- cumprod(c(27, rep(1.01,69)))
+
+x_future4 <- cbind(brent_war,coalf$`Point Forecast`,xlef$`Point Forecast`, ftsef$`Point Forecast`, nbp_war, sent0f$`Point Forecast` ,sent1f$`Point Forecast`)
+
+colnames(x_future4) <- c( "brent", "coal", "xle", "ftse", "nbp", "sent0", "sent1")
+
+```
+ 
+# Forecasting
+ 
+```{r}
+fcast <- fit_6 %>% forecast(xreg = ts(x_future))
+fcastsd <- (fcast$upper[,1] - fcast$lower[,1]) / (2 * qnorm(.5 + fcast$level[1] / 200))
+fcastcc <- as.data.frame(summary(fcast))
+fcastcc <- cbind(fcastcc,fcastsd )
+library(QRM)
+ESnorm(0.95, mu = 80.42326, sd = 0.4386444)
+
+autoplot(fcast) + 
+  ylab("y") +
+  coord_cartesian(xlim = c(2100, 2300),  ylim = c(50, 100))
+
+fcast1c <- as.data.frame(summary(fcast1))
+
+
+library(ggplot2)
+library(gridExtra)
+attr(fcast2$x, "tsp")
+fcast2 <- fit_6 %>% forecast(xreg = ts(x_future2))
+autoplot(fcast2)
+
+ fcast2a <- fit_6 %>% forecast(xreg = ts(x_future2))
+ 
+autoplot(fcast2a) + 
+  coord_cartesian(xlim = c(2100, 2300), ylim = c(50, 100))
+
+fcast2c <- as.data.frame(summary(fcast2))
+
+
+fcast3 <- fit_6 %>% forecast(xreg = ts(x_future3))
+autoplot(fcast3) + xlab("Date/Time") + ylab("Price")
+
+fcast3a <- fit_6 %>% forecast(xreg = ts(x_future3))
+autoplot(fcast3) +
+  coord_cartesian(xlim = c(2100, 2300), ylim = c(50, 100))
+
+fcast3c <- as.data.frame(summary(fcast3))
+
+fcast4 <- fit_6 %>% forecast(xreg = ts(x_future4))
+autoplot(fcast4) + xlab("Date/Time") + ylab("Price")
+
+fcast4a <- fit_6 %>% forecast(xreg = ts(x_future4))
+autoplot(fcast4) +
+  coord_cartesian(xlim = c(2100, 2300), ylim = c(50, 100))
+
+fcast4c <- as.data.frame(summary(fcast4))
+
+fcast2sd <- (fcast2$upper[,1] - fcast2$lower[,1]) / (2 * qnorm(.5 + fcast2$level[1] / 200))
+fcast3sd <- (fcast3$upper[,1] - fcast3$lower[,1]) / (2 * qnorm(.5 + fcast3$level[1] / 200))
+fcast4sd <- (fcast3$upper[,1] - fcast3$lower[,1]) / (2 * qnorm(.5 + fcast3$level[1] / 200))
+
+
+fcast2c <- cbind(fcast2c,fcast2sd )
+fcast3c <- cbind(fcast3c,fcast3sd )
+fcast4c <- cbind(fcast4c,fcast4sd )
+
+
+d <- c(10, 20, 30, 40, 50, 60, 70)
+
+
+for (i in d) {
+  print(ESnorm(0.95,fcast2c[i,1],fcast2c[i,6]))
+}
+
+for (i in d) {
+  print(ESnorm(0.95,fcast3c[i,1],fcast3c[i,6]))
+}
+
+
+for (i in d) {
+  print(ESnorm(0.95,fcast4c[i,1],fcast4c[i,6]))
+}
+```
+
+
+```{r}
+newdf <- dataset[c(rep(FALSE,10),TRUE), ]
+```
